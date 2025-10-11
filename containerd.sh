@@ -104,11 +104,11 @@ fi
 if [ -f /etc/os-release ];then
    osname=`grep ID /etc/os-release | egrep -v 'VERSION|LIKE|VARIANT|PLATFORM' | cut -d'=' -f2 | sed -e 's/"//' -e 's/"//'`
    echo $osname
-   if [ $osname == "ubuntu" ];then
+   if [ "$osname" = "ubuntu" ];then
        install_ubuntu
-   elif [ $osname == "amzn" ];then
+   elif [ "$osname" = "amzn" ];then
        install_centos
-   elif [ $osname == "centos" ];then
+   elif [ "$osname" = "centos" ];then
        install_centos
   fi
 else
