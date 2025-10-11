@@ -1,0 +1,141 @@
+Minimum requirement for install kubernetes is:
+
+Preferable OS - Ubuntu 22
+Configuration: 4GB RAM and 2 CPU core
+
+Kubernetes can be installed on a VM and can also be used as a service on various cloud providers:
+   -> EKS on AWS
+   -> GKE on GCP
+   -> AKS on azure
+These are readymade clusters provided by cloud as a service (you pay for the kubernetes service)
+
+As part of this service we will have a cluster with 1 master node service and user provider worker nodes.
+In readymade cluster -> you will get CRI, kubernetes, CNI
+
+But if we take our own VMs then we have to:
+Install docker and container-d
+Install kubernetes component
+Initiate kubernetes
+Install Container network interface
+
+We will use a tool called kubeadm to automatically set up kubernetes components for us.
+
+SetUp kubernetes Master Node:
+======================================
+Use AWS or GCP and we will create Ubuntu servers of 4 GB RAM 2 CPU core → t2.medium
+
+
+
+In GCP
+
+
+Connect to master and execute below commands:
+
+Only on MASTER NODE:
+============================================
+# sudo su -
+
+## Install Containerd
+
+sudo wget https://raw.githubusercontent.com/lerndevops/labs/master/scripts/installContainerd.sh -P /tmp
+sudo bash /tmp/installContainerd.sh
+sudo systemctl restart containerd.service
+
+
+### Install kubeadm,kubelet,kubectl
+
+You will install these packages on all of your machines:
+kubeadm: the command to bootstrap the cluster.
+kubelet: the component that runs on all of the machines in your cluster and does things like starting pods and containers.
+kubectl: the command line util to talk to your cluster.
+
+
+# sudo wget https://raw.githubusercontent.com/lerndevops/labs/master/scripts/installK8S.sh -P /tmp
+
+# sudo bash /tmp/installK8S.sh
+
+## Initialize kubernetes Master Node
+
+   # sudo kubeadm init --ignore-preflight-errors=all
+
+Execute the below commands to setup kubectl and apiserver communication
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+
+   ## install networking driver -- Weave/flannel/canal/calico etc...
+
+   ## below installs calico networking driver
+
+   kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/calico.yaml
+
+   # Validate:  kubectl get nodes
+
+
+Just for your information:
+
+
+
+=========================================
+
+
+
+SETUP worker Nodes:
+=====================================
+Create an Ubuntu server:
+ instance type t2.medium(AWS), e2 medium(GCP)
+OS : ubuntu 22 (AWS & GCP)
+
+
+
+
+
+
+
+On All Worker Nodes
+## Install Containerd
+# sudo su -
+sudo wget https://raw.githubusercontent.com/lerndevops/labs/master/scripts/installContainerd.sh -P /tmp
+sudo bash /tmp/installContainerd.sh
+sudo systemctl restart containerd.service
+
+## Install kubeadm,kubelet,kubectl
+
+sudo wget https://raw.githubusercontent.com/lerndevops/labs/master/scripts/installK8S.sh -P /tmp
+sudo bash /tmp/installK8S.sh
+
+## Run Below on Master Node to get join token
+
+#  kubeadm token create --print-join-command
+
+    copy the kubeadm join token from master & run it on all worker nodes
+
+On Master node:
+
+# kubectl get nodes
+
+===============================================================================
+
+Pods in Kubernetes:
+
+
+
+In k8s the pods will always be scheduled on the worker node
+In kubernetes we write the code to create Pod using a single line command or using a manifest file.
+
+# kubectl run pod1 --image nginx
+
+# kubectl get pods
+
+# kubectl get pods -o wide
+
+# kubectl describe pod pod1 | less
+
+# kubectl delete pod pod1
+
+Press q to come out of the above command.
+
+
+===========================================
